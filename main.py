@@ -36,7 +36,11 @@ async def on_message(message):
         genre = cmd_words[0]
         if '-' in genre:
             genre = cmd_words[0].replace('-', ',')
-        embed = get_movie(genre)
+        try:
+            embed = get_movie(genre)
+        except :
+            await message.channel.send("Please try again")
+
         # time_start = cmd_words[1]
         # time_end = cmd_words[2]
         # imdb_min_rating = cmd_words[3]
