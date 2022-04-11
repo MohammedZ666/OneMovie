@@ -1,3 +1,9 @@
+import discord
+from bs4 import BeautifulSoup
+import requests
+import random
+
+
 def get_env_data_as_dict(path: str) -> dict:
     f = open('.env')
     lines = f.readlines()
@@ -8,11 +14,6 @@ def get_env_data_as_dict(path: str) -> dict:
             env_dict[key] = value
     return env_dict
 
-
-import discord
-from bs4 import BeautifulSoup
-import requests
-import random
 
 client = discord.Client()
 
@@ -40,7 +41,7 @@ async def on_message(message):
             embed = get_movie(genre)
             await message.channel.send(embed=embed)
 
-        except :
+        except:
             await message.channel.send("Please try again")
 
         # time_start = cmd_words[1]
@@ -51,7 +52,7 @@ async def on_message(message):
 def get_movie(genre):
     start = random.randint(1, 200)
     page = requests.get('https://www.imdb.com/search/title/?title_type=feature&genres={}&start={}&ref_=adv_nxt'.format(
-        genre,start))  # Getting page HTML through request
+        genre, start))  # Getting page HTML through request
     soup = BeautifulSoup(page.content, 'html.parser')  # Parsing content using beautifulsoup
     movies = soup.find_all('div', class_="lister-item mode-advanced")
     movie = movies[random.randint(0, 49)]
@@ -59,7 +60,8 @@ def get_movie(genre):
     movie_name = title_anchor.get_text(strip=True)
     movie_imdb_link = 'https://www.imdb.com/' + title_anchor.attrs['href']
     movie_thumbnail = movie.find_next('a').find_next('img').attrs['loadlate']
-    movie_rating = movie.find_next('span', class_="global-sprite rating-star imdb-rating").find_next('strong').get_text()
+    movie_rating = movie.find_next('span', class_="global-sprite rating-star imdb-rating").find_next(
+        'strong').get_text()
     movie_metascore = movie.find_next('div', class_="inline-block ratings-metascore").find_next('span').get_text()
     movie_details_elem = movie.find_all_next('p')
     movie_details = ""
@@ -78,13 +80,14 @@ def get_movie(genre):
         movie_actors += "[{}](https://www.imdb.com/{})".format(anchor.get_text(), anchor.attrs['href']) + ' | '
     movie_directors = movie_directors[:-3]
     movie_actors = movie_actors[:-3]
-    movie_details_elem = movie.find_all_next('span', attrs={'name':'nv'})
+    movie_details_elem = movie.find_all_next('span', attrs={'name': 'nv'})
     movie_votes = movie_details_elem[0].get_text()
     movie_gross = movie_details_elem[1].get_text()
     embed = discord.Embed()  # any kwargs you want here
     page = requests.get(movie_imdb_link)
     soup = BeautifulSoup(page.content, 'html.parser')  # Parsing content using beautifulsoup
-    trailer_elem = soup.find('a', class_='ipc-lockup-overlay sc-5ea2f380-2 gdvnDB hero-media__slate-overlay ipc-focusable')
+    trailer_elem = soup.find('a',
+                             class_='ipc-lockup-overlay sc-5ea2f380-2 gdvnDB hero-media__slate-overlay ipc-focusable')
     movie_trailer = 'https://www.imdb.com/' + trailer_elem.attrs['href']
     embed.description = "** Your OneMovie Recommendation **"
     embed.set_image(url=movie_thumbnail)
