@@ -36,6 +36,7 @@ async def on_message(message):
             embed = discord.Embed(description="")
             embed.set_image(url="https://media.giphy.com/media/Ll2fajzk9DgaY/giphy.gif")
             await message.channel.send(embed=embed)        
+            return
         words = msg.replace('$movie', '').split(' ')
         cmd_words = [cmd_word for cmd_word in words if cmd_word.strip()]
         if len(cmd_words) == 0 or '-help' in cmd_words:
